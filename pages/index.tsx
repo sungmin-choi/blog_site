@@ -3,20 +3,23 @@ import CTA from '@/components/sections/cta';
 import FeaturedPost from '@/components/sections/featuredPost';
 import LatestPosts from '@/components/sections/latestPosts';
 import SEO from '@/components/sections/seo';
-import { getAllPosts } from 'lib/mdx';
-import { IPostMeta } from 'types';
+import { getBlogMeta } from 'lib/mdx';
+import { getBlogs } from 'services';
+import { IBlogMeta } from 'types';
 import { NextPageWithLayout } from './page';
 
 interface IHome {
-  postsMeta: IPostMeta[];
+  blogsMeta: IBlogMeta[];
 }
 
-const Home: NextPageWithLayout<IHome> = ({ postsMeta }) => {
+const Home: NextPageWithLayout<IHome> = ({ blogsMeta }) => {
+  console.log(blogsMeta);
+
   return (
     <>
       <SEO />
       <FeaturedPost />
-      <LatestPosts postsMeta={postsMeta} />
+      <LatestPosts blogsMeta={blogsMeta} />
       <CTA />
     </>
   );
@@ -26,9 +29,11 @@ export default Home;
 Home.getLayout = (page) => <MainLayout>{page}</MainLayout>;
 
 export async function getStaticProps() {
-  const postsMeta = getAllPosts()
-    .slice(0, 9)
-    .map((post) => post.meta);
+  const blogs = await getBlogs();
 
-  return { props: { postsMeta } };
+  // console.log(blogsMeta.data);
+
+  const blogsMeta = blogs.data.map((blog: any) => getBlogMeta(blog));
+
+  return { props: { blogsMeta } };
 }

@@ -2,7 +2,7 @@ import fs from 'fs';
 import { sync } from 'glob';
 import matter from 'gray-matter';
 import path from 'path';
-import { IPost } from 'types';
+import { IBlogMeta, IPost } from 'types';
 
 const POSTS_PATH = path.join(process.cwd(), 'posts');
 
@@ -62,5 +62,22 @@ export const getPostFromSlug2 = (source: string, slug: string): IPost => {
       date: (data.date ?? new Date()).toString(),
       image: data.image ?? '',
     },
+  };
+};
+
+export const getBlogMeta = (data: any): IBlogMeta => {
+  // const postPath = path.join(POSTS_PATH, `${slug}.md`);
+  // const source = fs.readFileSync(postPath);
+  // const { content, data } = matter(source);
+
+  return {
+    post_id: data.post_id,
+    md_url: data.md_url,
+    slug: data.title,
+    excerpt: data.excerpt ?? '',
+    title: data.title,
+    tags: (data.tags ?? []).sort(),
+    date: (data.date ?? new Date()).toString(),
+    image: data.image ?? '',
   };
 };

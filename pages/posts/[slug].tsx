@@ -1,76 +1,34 @@
-import MainLayout from '@/components/layout';
 import { MDXComponents } from '@/components/MDXComponents';
 import CTA from '@/components/sections/cta';
 import SEO from '@/components/sections/seo';
 import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
+import matter from 'gray-matter';
 import 'highlight.js/styles/atom-one-dark.css';
-import { getPostFromSlug2, getSlugs } from 'lib/mdx';
-import type { GetStaticPaths, GetStaticProps } from 'next';
-import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote';
+import { InferGetServerSidePropsType } from 'next';
+import { MDXRemote } from 'next-mdx-remote';
 import { serialize } from 'next-mdx-remote/serialize';
 import { useRouter } from 'next/router';
-import { NextPageWithLayout } from 'pages/page';
+import { useState } from 'react';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
-import { IPostMeta } from 'types';
+import { getBlog } from 'services';
+import { IBlogMeta } from 'types';
 
-interface IPostPage {
-  post: {
-    source: MDXRemoteSerializeResult<Record<string, unknown>>;
-    meta: IPostMeta;
-  };
-}
+export const getServerSideProps = async ({
+  params,
+}: {
+  params: { slug: string };
+}) => {
+  const { slug } = params;
+  // id 값을 사용하여 필요한 데이터를 불러옴
+  // 예를 들어, API 호출을 통해 포스트 데이터를 불러올 수 있음
+  const res = await getBlog(slug);
+  const response = await axios.get(res.data[0].md_url);
+  const { content, data } = matter(response.data);
 
-const PostPage: NextPageWithLayout<IPostPage> = ({ post }) => {
-  const router = useRouter();
-  console.log(post.source);
-  return (
-    <>
-      <SEO title={`${post.meta.title}`} urlImage={post.meta.image} />
-
-      <section className="py-10">
-        <div className="container mx-auto px-4 md:px-20">
-          <div
-            onClick={() => router.back()}
-            className="flex items-center space-x-2 cursor-pointer hover:underline"
-          >
-            <ChevronLeftIcon className="h-4" />
-            <span className="text-md font-semibold">Go back</span>
-          </div>
-
-          <div className="px-8 md:px-44 pb-20">
-            <div className="py-10">
-              <p className="text-sm mb-2">
-                {post.meta.date.split(' ').slice(0, 4).join(' ')}
-              </p>
-              <h1 className="text-2xl font-bold">{post.meta.title}</h1>
-            </div>
-
-            <MDXRemote {...post.source} components={MDXComponents} />
-          </div>
-        </div>
-      </section>
-
-      <CTA />
-    </>
-  );
-};
-
-export default PostPage;
-
-PostPage.getLayout = (page) => <MainLayout>{page}</MainLayout>;
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { slug } = params as { slug: string };
-
-  const res = await axios.get(
-    'https://p1-mdx.s3.ap-northeast-2.amazonaws.com/google-one-tap+(1).md'
-  );
-
-  const { content, meta } = getPostFromSlug2(res.data, 'Hello');
-
+  // 불러온 데이터를 props로 페이지 컴포넌트에 전달
   const mdxSource = await serialize(content, {
     mdxOptions: {
       rehypePlugins: [
@@ -80,15 +38,66 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       ],
     },
   });
-
-  return { props: { post: { source: mdxSource, meta } } };
-};
-
-export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = getSlugs().map((slug) => ({ params: { slug } }));
+  const meta: IBlogMeta = {
+    post_id: data.post_id ?? slug,
+    md_url: data.md_url ?? res.data[0].md_url,
+    slug: data.title,
+    excerpt: data.excerpt ?? '',
+    title: data.title,
+    tags: (data.tags ?? []).sort(),
+    date: (data.date ?? new Date()).toString(),
+    image: data.image ?? '',
+  };
 
   return {
-    paths,
-    fallback: false,
+    props: {
+      source: mdxSource,
+      meta,
+    },
   };
 };
+
+const PostPage = ({
+  source,
+  meta,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter();
+
+  const [metaData, setMetaData] = useState<any>(meta);
+  const [sourceData, setSourceData] = useState<any>(source);
+  return (
+    <>
+      {metaData && sourceData && (
+        <>
+          <SEO title={`${metaData.title}`} urlImage={metaData.image} />
+          <section className="py-10">
+            <div className="container mx-auto px-4 md:px-20">
+              <div
+                onClick={() => router.back()}
+                className="flex items-center space-x-2 cursor-pointer hover:underline"
+              >
+                <ChevronLeftIcon className="h-4" />
+                <span className="text-md font-semibold">Go back</span>
+              </div>
+
+              <div className="px-8 md:px-44 pb-20">
+                <div className="py-10">
+                  <p className="text-sm mb-2">
+                    {metaData.date.split(' ').slice(0, 4).join(' ')}
+                  </p>
+                  <h1 className="text-2xl font-bold">{metaData.title}</h1>
+                </div>
+
+                <MDXRemote {...sourceData} components={MDXComponents} />
+              </div>
+            </div>
+          </section>
+        </>
+      )}
+
+      <CTA />
+    </>
+  );
+};
+
+export default PostPage;
