@@ -34,7 +34,7 @@ const LatestPosts: React.FC<ILatestPosts> = ({ blogsMeta }) => {
                     {meta.title}
                   </a>
                 </Link>
-
+                <p className="text-base">{meta.excerpt}</p>
                 <p className="text-sm">
                   {meta.date.split(' ').slice(0, 4).join(' ')}
                 </p>

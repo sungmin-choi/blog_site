@@ -13,8 +13,6 @@ interface IHome {
 }
 
 const Home: NextPageWithLayout<IHome> = ({ blogsMeta }) => {
-  console.log(blogsMeta);
-
   return (
     <>
       <SEO />
