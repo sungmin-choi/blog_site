@@ -66,7 +66,7 @@ Once you have an account, you can connect your GitHub repository and set up auto
 
 That's it! You now have a Next.js + MDX blog up and running. Happy blogging!
 
-[Demo](https://sparkblog.vercel.app/)
+[Demo](https://QWERblog.vercel.app/)
 
 <!-- ================== contact ================= -->
 

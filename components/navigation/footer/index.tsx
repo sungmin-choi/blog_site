@@ -9,7 +9,7 @@ const Footer = () => {
 
         <div className="social">
           <a
-            href="https://github.com/eric-ricky/nextjs-mdx-blog-starter"
+            href="https://github.com/sungmin-choi/blog_site"
             aria-label="GitHub"
             target="_blank"
             rel="noreferrer"

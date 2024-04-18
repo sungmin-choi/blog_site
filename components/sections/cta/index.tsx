@@ -1,9 +1,7 @@
-import Image from 'next/image';
-
 const CTA = () => {
   return (
-    <section className="py-44 md:py-20 relative min-h-[40vh] ">
-      <Image
+    <section className=" ">
+      {/* <Image
         src="/images/bg.avif"
         alt="Call to action"
         layout="fill"
@@ -30,7 +28,7 @@ const CTA = () => {
             Subscribe
           </button>
         </div>
-      </div>
+      </div> */}
     </section>
   );
 };

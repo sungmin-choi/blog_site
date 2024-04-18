@@ -7,7 +7,7 @@ const GitHubMark = () => {
 
   return (
     <a
-      href="https://github.com/eric-ricky/nextjs-mdx-blog-starter"
+      href="https://github.com/sungmin-choi"
       aria-label="GitHub"
       target="_blank"
       rel="noreferrer"
