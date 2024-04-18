@@ -3,9 +3,9 @@ import Link from 'next/link';
 
 const FeaturedPost = () => {
   return (
-    <section className="py-20">
+    <section className="py-10">
       <div className="container mx-auto flex flex-col md:flex-row md:items-center gap-4 px-4 md:px-10">
-        <div className="w-[85%] md:w-1/2 pb-6 md:pb-0">
+        <div className="w-[90%] md:w-9/10 pb-6 md:pb-0">
           <p className="font-bold">
             사내 기술 블로그 플랫폼을 구축하였습니다. 이 프로젝트는 서버리스
             아키텍처, 관리자 페이지의 보안 접근, 지속적인 통합 및 배포, 다중
@@ -26,7 +26,7 @@ const FeaturedPost = () => {
           </Link>
         </div>
 
-        <div className="relative rounded-lg w-full h-96 md:h-80 lg:h-[70vh] shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
+        <div className="relative rounded-lg w-full h-[70vh] shadow-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
           <Image
             src="https://p1-image.s3.ap-northeast-2.amazonaws.com/2aaf7arc.png"
             layout="fill"
